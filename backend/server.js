@@ -1,25 +1,10 @@
 const express = require("express");
 const app = express();
 const port = 3000;
+const data = require("./data/users.json");
 
 app.get("/", (req, res) => {
-  res.json([
-    {
-      id: 1,
-      name: "Andrew",
-      isStudent: false,
-    },
-    {
-      id: 2,
-      name: "Grace",
-      isStudent: false,
-    },
-    {
-      id: 3,
-      name: "Chris",
-      isStudent: true,
-    },
-  ]);
+  res.json(data);
 });
 
 app.listen(port, () => {
