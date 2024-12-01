@@ -4,6 +4,10 @@ const port = 3000;
 const data = require("./data/users.json");
 
 app.get("/", (req, res) => {
+  res.send("Hello from Alergease API");
+});
+
+app.get("/users", (req, res) => {
   res.json(data);
 });
 
