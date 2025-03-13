@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                  Int             @id            @default(autoincrement())
+  firstName           String          @db.VarChar(255)
+  lastName            String          @db.VarChar(255)
+  email               String          @db.VarChar(255)
+  dateOfBirth         DateTime       
+  createdAt           DateTime        @default(now()) @db.Timestamp(6)
+  profilePicture      String?
+  log                 Log[]           // Relation field to Log
+  healthCondition     HealthCondition[] // Relation field to HealthCondition
+  role                Role
+  medications         Medication[]
+}
+
+model Log {
+  id                  Int             @id            @default(autoincrement())
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  title               String          @db.VarChar(255)
+  severity            Severity
+  userId              Int             // Foreign key to User
+  user                User            @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade delete logs when user is deleted
+  eatenToday          EatenToday[] 
+  drankToday          DrankToday[]  
+  toiletriesUsed      Toiletry[]
+  weather             Weather
+  temperature         Temperature
+}
+
+model EatenToday {
+  id        Int     @id @default(autoincrement())
+  foodItem  String  // What food was eaten
+  logId     Int     // Foreign key to Log
+  log       Log     @relation(fields: [logId], references: [id], onDelete: Cascade)  // Cascade delete
+}
+
+model DrankToday {
+  id        Int     @id @default(autoincrement())
+  drinkItem String  // What drink was consumed
+  logId     Int     // Foreign key to Log
+  log       Log     @relation(fields: [logId], references: [id], onDelete: Cascade)  // Cascade delete
+}
+
+model Toiletry {
+  id            Int     @id @default(autoincrement())
+  toiletryName  String  // Name of the toiletry (e.g., "toothpaste")
+  logId         Int     // Foreign key to Log
+  log           Log     @relation(fields: [logId], references: [id], onDelete: Cascade)  // Cascade delete
+}
+
+
+model HealthCondition {
+  id                  Int             @id            @default(autoincrement())
+  name                String          @db.VarChar(255)
+  description         String?
+  userId              Int             // Foreign key to User
+  user                User            @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade delete health conditions when user is deleted
+}
+
+model Medication {
+  id                  Int             @id            @default(autoincrement())
+  name                String          @db.VarChar(255)
+  dosage              String          @db.VarChar(255)
+  userId              Int
+  user                User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Weather {
+  SUNNY
+  CLOUDY
+  RAINY
+  SNOW
+}
+
+enum Temperature {
+  COLD
+  WARM
+  HOT
+}
+
+enum Severity {
+  ONE
+  TWO
+  THREE
+}
