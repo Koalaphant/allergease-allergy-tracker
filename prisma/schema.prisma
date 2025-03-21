@@ -16,48 +16,26 @@ model User {
   dateOfBirth         DateTime       
   createdAt           DateTime        @default(now()) @db.Timestamp(6)
   profilePicture      String?
-  log                 Log[]           // Relation field to Log
-  healthCondition     HealthCondition[] // Relation field to HealthCondition
+  logs                Log[]           // Relation field to Log
+  healthConditions    HealthCondition[] // Relation field to HealthCondition
   role                Role
   medications         Medication[]
 }
 
 model Log {
-  id                  Int             @id            @default(autoincrement())
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
-  title               String          @db.VarChar(255)
-  severity            Severity
-  userId              Int             // Foreign key to User
-  user                User            @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade delete logs when user is deleted
-  eatenToday          EatenToday[] 
-  drankToday          DrankToday[]  
-  toiletriesUsed      Toiletry[]
-  weather             Weather
-  temperature         Temperature
+  id                Int          @id @default(autoincrement())
+  title             String
+  severity         Severity
+  userId           Int
+  weather          Weather
+  temperature      Temperature
+  eatenToday       Json?        // Store a list of food items as JSON
+  drankToday       Json?        // Store a list of drink items as JSON
+  toiletriesUsed   Json?        // Store a list of toiletry items as JSON
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation to User
+  createdAt        DateTime     @default(now()) @db.Timestamp(6) // Automatically set to the current time
+  updatedAt        DateTime     @updatedAt @db.Timestamp(6) // Automatically updated on every update
 }
-
-model EatenToday {
-  id        Int     @id @default(autoincrement())
-  foodItem  String  // What food was eaten
-  logId     Int     // Foreign key to Log
-  log       Log     @relation(fields: [logId], references: [id], onDelete: Cascade)  // Cascade delete
-}
-
-model DrankToday {
-  id        Int     @id @default(autoincrement())
-  drinkItem String  // What drink was consumed
-  logId     Int     // Foreign key to Log
-  log       Log     @relation(fields: [logId], references: [id], onDelete: Cascade)  // Cascade delete
-}
-
-model Toiletry {
-  id            Int     @id @default(autoincrement())
-  toiletryName  String  // Name of the toiletry (e.g., "toothpaste")
-  logId         Int     // Foreign key to Log
-  log           Log     @relation(fields: [logId], references: [id], onDelete: Cascade)  // Cascade delete
-}
-
 
 model HealthCondition {
   id                  Int             @id            @default(autoincrement())
